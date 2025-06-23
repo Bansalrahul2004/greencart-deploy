@@ -13,17 +13,15 @@ const ProductCard = ({ product }) => {
             onClick={() => { navigate(`/products/${product.category.toLowerCase()}/${product._id}`); window.scrollTo(0, 0); }}
             className="group relative bg-white border border-gray-200/80 rounded-3xl p-5 transition-all duration-300 hover:shadow-glow-strong hover:-translate-y-2"
         >
-            <div className="relative mb-5">
+            <div className="mb-5">
+                {/* Smart Badges */}
+                <div className="mb-2 flex flex-wrap gap-1 justify-start items-center">
+                    <ProductBadges product={product} className="flex-row gap-1" />
+                </div>
                 {/* Image Container */}
                 <div className="flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-2xl h-56 overflow-hidden">
                     <img className="group-hover:scale-110 transition-transform duration-500 ease-in-out max-h-48 object-contain" src={product.image[0]} alt={product.name} />
                 </div>
-
-                {/* Smart Badges */}
-                <div className="absolute top-4 left-4 z-10">
-                    <ProductBadges product={product} />
-                </div>
-
                 {/* Quick Add to Cart Button */}
                 <div 
                     onClick={(e) => { e.stopPropagation(); addToCart(product._id); }} 
@@ -49,14 +47,13 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 {/* Price and Add/Remove buttons */}
-                <div className="flex items-center justify-between pt-2">
+                <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 pt-2">
                     <div className="flex items-baseline gap-2">
                         <p className="text-2xl font-bold text-primary">{formatPrice(product.offerPrice)}</p>
                         {product.price > product.offerPrice && (
                             <p className="text-md text-gray-400 line-through">{formatPrice(product.price)}</p>
                         )}
                     </div>
-                    
                     <div onClick={(e) => { e.stopPropagation(); }} className="text-primary">
                         {!cartItems[product._id] ? (
                             <button 
@@ -66,7 +63,7 @@ const ProductCard = ({ product }) => {
                                 <img src={assets.add_icon} alt="Add" className="w-5 h-5"/>
                             </button>
                         ) : (
-                            <div className="flex items-center justify-center gap-2 h-10 bg-primary/10 border border-primary/20 rounded-full px-2 select-none">
+                            <div className="flex flex-col xs:flex-row items-center justify-center gap-1 xs:gap-2 h-auto bg-primary/10 border border-primary/20 rounded-full px-2 select-none min-w-[60px] xs:min-w-[110px]">
                                 <button onClick={() => removeFromCart(product._id)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-primary/20 cursor-pointer text-lg font-bold">
                                     -
                                 </button>

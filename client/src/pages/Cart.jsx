@@ -298,29 +298,27 @@ const Cart = () => {
                                                 </div>
 
                                                 {/* Enhanced Quantity */}
-                                                <div className="col-span-2">
-                                                    <div className="flex items-center justify-center">
-                                                        <div className="flex items-center bg-gradient-to-r from-gray-50 to-green-50/50 rounded-xl border border-gray-200/50 shadow-sm">
-                                                            <button 
-                                                                onClick={() => handleQuantityChange(product._id, cartItems[product._id] - 1)}
-                                                                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary hover:bg-primary/10 rounded-l-xl transition-all duration-200 hover:scale-105"
-                                                            >
-                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                                                </svg>
-                                                            </button>
-                                                            <span className="px-4 py-2 text-lg font-bold text-gray-900 min-w-[3rem] text-center bg-white/50">
-                                                                {cartItems[product._id]}
-                                                            </span>
-                                                            <button 
-                                                                onClick={() => handleQuantityChange(product._id, cartItems[product._id] + 1)}
-                                                                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary hover:bg-primary/10 rounded-r-xl transition-all duration-200 hover:scale-105"
-                                                            >
-                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
+                                                <div className="col-span-12 sm:col-span-2 mt-4 sm:mt-0 flex sm:block justify-center">
+                                                    <div className="flex flex-row items-center bg-gradient-to-r from-gray-50 to-green-50/50 rounded-xl border border-gray-200/50 shadow-sm min-w-[120px] gap-1 sm:gap-2 mx-auto">
+                                                        <button 
+                                                            onClick={() => handleQuantityChange(product._id, cartItems[product._id] - 1)}
+                                                            className="w-9 h-9 flex items-center justify-center text-gray-600 hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-200 hover:scale-105"
+                                                        >
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                                                            </svg>
+                                                        </button>
+                                                        <span className="px-3 py-2 text-lg font-bold text-gray-900 min-w-[2.5rem] text-center bg-white/50">
+                                                            {cartItems[product._id]}
+                                                        </span>
+                                                        <button 
+                                                            onClick={() => handleQuantityChange(product._id, cartItems[product._id] + 1)}
+                                                            className="w-9 h-9 flex items-center justify-center text-gray-600 hover:text-primary hover:bg-primary/10 rounded-full transition-all duration-200 hover:scale-105"
+                                                        >
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                                            </svg>
+                                                        </button>
                                                     </div>
                                                 </div>
 

@@ -47,7 +47,22 @@ const fetchUser = async ()=>{
         const {data} = await axios.get('api/user/is-auth');
         if (data.success){
             setUser(data.user)
-            setCartItems(data.user.cartItems)
+            // Merge localStorage cart with backend cart
+            const storedCart = localStorage.getItem('cartItems');
+            let mergedCart = { ...data.user.cartItems };
+            if (storedCart) {
+                const localCart = JSON.parse(storedCart);
+                for (const key in localCart) {
+                    if (mergedCart[key]) {
+                        mergedCart[key] += localCart[key];
+                    } else {
+                        mergedCart[key] = localCart[key];
+                    }
+                }
+            }
+            setCartItems(mergedCart);
+            // Optionally, clear localStorage after merging
+            localStorage.removeItem('cartItems');
         }
     } catch (error) {
         setUser(null)
@@ -149,6 +164,19 @@ const getCartAmount = () =>{
             updateCart()
         }
     },[cartItems])
+
+    // On app load, always initialize cartItems from localStorage if it exists (for all users)
+    useEffect(() => {
+        const storedCart = localStorage.getItem('cartItems');
+        if (storedCart) {
+            setCartItems(JSON.parse(storedCart));
+        }
+    }, []);
+
+    // Always persist cartItems to localStorage
+    useEffect(() => {
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    }, [cartItems]);
 
     const value = {navigate, user, setUser, setIsSeller, isSeller,
         showUserLogin, setShowUserLogin, products, currency, formatPrice, addToCart, updateCartItem, removeFromCart, cartItems, searchQuery, setSearchQuery, getCartAmount, getCartCount, axios, fetchProducts, setCartItems

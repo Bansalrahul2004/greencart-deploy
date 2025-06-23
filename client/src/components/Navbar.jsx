@@ -356,7 +356,7 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Menu Button and Profile */}
                     <div className='flex items-center gap-4 md:hidden'>
                         <div onClick={() => navigate("/cart")} className="relative cursor-pointer">
                             <div className="p-2 bg-white/80 backdrop-blur-sm border border-white/50 rounded-full shadow-lg">
@@ -366,6 +366,52 @@ const Navbar = () => {
                                 {getCartCount()}
                             </div>
                         </div>
+                        {user && (
+                            <>
+                                <div className='relative md:hidden'>
+                                    <div 
+                                        className="p-1 bg-gradient-to-r from-primary to-green-400 rounded-full cursor-pointer transition-all duration-300 hover:scale-110"
+                                        onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                                    >
+                                        {user.profileImage ? (
+                                            <img 
+                                                src={user.profileImage} 
+                                                className='w-8 h-8 rounded-full border-2 border-white object-cover' 
+                                                alt="Profile" 
+                                            />
+                                        ) : (
+                                            <img src={assets.profile_icon} className='w-8 h-8 rounded-full border-2 border-white' alt="" />
+                                        )}
+                                    </div>
+                                    {/* Fullscreen Modal for mobile profile dropdown */}
+                                    {profileDropdownOpen && (
+                                        <>
+                                            <div className="fixed inset-0 bg-black bg-opacity-40 z-50" onClick={() => setProfileDropdownOpen(false)}></div>
+                                            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden animate-slide-up">
+                                                <div className="bg-white rounded-t-2xl shadow-2xl p-0 flex flex-col max-h-[80vh] h-[min(420px,80vh)] overflow-y-auto relative">
+                                                    <button onClick={() => setProfileDropdownOpen(false)} className="absolute top-3 right-4 text-3xl text-gray-400 z-10">&times;</button>
+                                                    <div className="flex flex-col items-center gap-2 mb-4 pt-8 pb-2 px-6">
+                                                        {user.profileImage ? (
+                                                            <img src={user.profileImage} className='w-16 h-16 rounded-full border-2 border-white object-cover' alt="Profile" />
+                                                        ) : (
+                                                            <img src={assets.profile_icon} className='w-16 h-16 rounded-full border-2 border-white' alt="" />
+                                                        )}
+                                                        <div className="text-lg font-semibold text-gray-800">{user?.name || 'User'}</div>
+                                                        <div className="text-xs text-gray-500">{user?.email}</div>
+                                                    </div>
+                                                    <div className="flex flex-col gap-2 px-4 pb-4">
+                                                        <button onClick={() => {navigate('/profile'); setProfileDropdownOpen(false); setOpen(false);}} className='w-full text-left px-4 py-3 rounded-xl font-medium text-gray-700 hover:bg-blue-50'>Profile</button>
+                                                        <button onClick={() => {navigate('/my-orders'); setProfileDropdownOpen(false); setOpen(false);}} className='w-full text-left px-4 py-3 rounded-xl font-medium text-gray-700 hover:bg-green-50'>My Orders</button>
+                                                        <button onClick={() => {navigate('/addresses'); setProfileDropdownOpen(false); setOpen(false);}} className='w-full text-left px-4 py-3 rounded-xl font-medium text-gray-700 hover:bg-purple-50'>Addresses</button>
+                                                        <button onClick={logout} className='w-full text-left px-4 py-3 rounded-xl font-medium text-red-600 hover:bg-red-50'>Logout</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </>
+                        )}
                         <button 
                             onClick={() => open ? setOpen(false) : setOpen(true)} 
                             aria-label="Menu" 
@@ -407,12 +453,20 @@ const Navbar = () => {
                                 Login
                             </button>
                         ) : (
-                            <button 
-                                onClick={logout} 
-                                className="w-full px-6 py-4 mt-4 font-semibold text-white transition-all duration-500 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl hover:shadow-xl hover:scale-105"
-                            >
-                                Logout
-                            </button>
+                            <>
+                                <NavLink to="/profile" onClick={() => setOpen(false)} className="block w-full px-4 py-3 font-semibold transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50">
+                                    Profile
+                                </NavLink>
+                                <NavLink to="/addresses" onClick={() => setOpen(false)} className="block w-full px-4 py-3 font-semibold transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50">
+                                    Addresses
+                                </NavLink>
+                                <button 
+                                    onClick={logout} 
+                                    className="w-full px-6 py-4 mt-4 font-semibold text-white transition-all duration-500 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl hover:shadow-xl hover:scale-105"
+                                >
+                                    Logout
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>
