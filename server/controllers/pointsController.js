@@ -285,4 +285,50 @@ export const getRedemptionOptions = async (req, res) => {
             message: 'Failed to get redemption options'
         });
     }
-}; 
+};
+
+// Deduct points for cancelled order
+export const deductPointsForOrder = async (userId, orderId) => {
+    try {
+        if (!userId || !orderId) {
+            console.error('Invalid parameters for points deduction:', { userId, orderId });
+            return;
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+            console.error('User not found for points deduction:', userId);
+            return;
+        }
+        const order = await Order.findById(orderId);
+        if (!order) {
+            console.error('Order not found for points deduction:', orderId);
+            return;
+        }
+        // Check if points were already deducted for this order
+        const existingDeduction = user.pointsHistory.find(
+            entry => entry.orderId && entry.orderId.toString() === orderId.toString() && entry.transactionType === 'expired'
+        );
+        if (existingDeduction) {
+            console.log(`Points already deducted for cancelled order ${orderId}`);
+            return;
+        }
+        // Always deduct 5 points (or user's remaining points if less)
+        const pointsToDeduct = Math.min(5, user.points);
+        if (pointsToDeduct <= 0) {
+            console.log(`User ${userId} has no points to deduct for cancelled order ${orderId}`);
+            return;
+        }
+        user.points -= pointsToDeduct;
+        // Add to points history
+        user.pointsHistory.push({
+            transactionType: 'expired',
+            amount: -pointsToDeduct,
+            description: `Deducted ${pointsToDeduct} points due to cancellation of order #${orderId}`,
+            orderId: orderId
+        });
+        await user.save();
+        console.log(`Deducted ${pointsToDeduct} points from user ${userId} for cancelled order ${orderId}`);
+    } catch (error) {
+        console.error('Error deducting points for cancelled order:', error);
+    }
+} 

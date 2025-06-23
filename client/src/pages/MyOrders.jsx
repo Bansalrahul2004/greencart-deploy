@@ -47,6 +47,28 @@ const MyOrders = () => {
         }
     };
 
+    // Helper to check if order is cancellable
+    const isCancellable = (status) => {
+        const nonCancellableStatuses = ['Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Returned'];
+        return !nonCancellableStatuses.includes(status);
+    };
+
+    // Cancel order handler
+    const handleCancelOrder = async (orderId) => {
+        if (!window.confirm('Are you sure you want to cancel this order?')) return;
+        try {
+            const { data } = await axios.post('/api/order/cancel', { orderId });
+            if (data.success) {
+                alert('Order cancelled successfully!');
+                fetchMyOrders();
+            } else {
+                alert(data.message || 'Failed to cancel order.');
+            }
+        } catch (error) {
+            alert('Error cancelling order.');
+        }
+    };
+
   return (
     <div className='mt-16 pb-16'>
         <div className='flex flex-col items-end w-max mb-8'>
@@ -73,12 +95,22 @@ const MyOrders = () => {
                             </span>
                         )}
                     </div>
-                    <button
-                        onClick={() => setSelectedOrderId(order._id)}
-                        className='bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 text-sm'
-                    >
-                        Track Order
-                    </button>
+                    <div className='flex gap-2'>
+                        <button
+                            onClick={() => setSelectedOrderId(order._id)}
+                            className='bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 text-sm'
+                        >
+                            Track Order
+                        </button>
+                        {isCancellable(order.status) && (
+                            <button
+                                onClick={() => handleCancelOrder(order._id)}
+                                className='bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm'
+                            >
+                                Cancel Order
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {order.items.map((item, index)=>(

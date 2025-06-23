@@ -1,7 +1,7 @@
 import { Order, Product, User } from "../models/index.js";
 import stripe from "stripe"
 import { sendOrderStatusNotification } from "../services/notificationService.js";
-import { awardPointsForOrder } from "./pointsController.js";
+import { awardPointsForOrder, deductPointsForOrder } from "./pointsController.js";
 
 // Helper function to add timeline entry
 const addTimelineEntry = (order, status, description, location = null) => {
@@ -372,5 +372,38 @@ export const getAllOrders = async (req, res)=>{
         res.json({ success: true, orders });
     } catch (error) {
         res.json({ success: false, message: error.message });
+    }
+}
+
+// Cancel Order : /api/order/cancel
+export const cancelOrder = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        const userId = req.user.id;
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.json({ success: false, message: 'Order not found' });
+        }
+        if (order.userId !== userId) {
+            return res.json({ success: false, message: 'Unauthorized access' });
+        }
+        // Only allow cancel if not shipped or beyond
+        const nonCancellableStatuses = ['Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Returned'];
+        if (nonCancellableStatuses.includes(order.status)) {
+            return res.json({ success: false, message: `Order cannot be cancelled at status: ${order.status}` });
+        }
+        order.status = 'Cancelled';
+        addTimelineEntry(order, 'Cancelled', 'Order cancelled by user');
+        await order.save();
+        // Deduct points for this order
+        await deductPointsForOrder(userId, orderId);
+        // Send notification
+        const user = await User.findById(userId);
+        if (user && order.notifications.email) {
+            await sendOrderStatusNotification(user.email, user.name, orderId, 'Cancelled');
+        }
+        return res.json({ success: true, message: 'Order cancelled successfully', order });
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
     }
 }
